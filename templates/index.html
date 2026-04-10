@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>ocean_pulse</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <h1>ocean_pulse's attention tracker</h1>
+    <div id="container">
+        <video id="webcamVideo" autoplay playsinline></video>
+        <div id="data">
+            <p>times attention lost: {{attention_counter}}</p>
+            <p>average attention lapse: {{attention_avrg}}</p>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById("webcamVideo");
+        navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {video.srcObject = stream;})
+        .catch((error) => {console.error("could not access webcam!");});
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+video{
+    width: 640px;
+    height: 480px;
+    border-radius: 12px;
+}
+
+h1{
+    padding: 30px;
+    color: rgb(230, 250, 252);
+    background: rgb(53, 61, 82);
+    border-radius: 12px;
+}
+
+#container {
+    width: 100%;
+    display:flex;
+    flex-wrap: wrap;
+    font-family: sans-serif;
+}
+
+#container div{
+    margin: 20px;
+}
+
+body{
+    font-family: system-ui;
+    background:rgb(230, 250, 252);
+    color: rgb(53, 61, 82);
+}
