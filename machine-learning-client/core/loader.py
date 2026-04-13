@@ -5,6 +5,8 @@ This module provides functionality to load image files from a folder
 and return them as (filename, image) pairs using OpenCV.
 """
 
+# pylint: disable=no-member
+
 import os
 import cv2
 
