@@ -6,11 +6,12 @@ name = "pypi"
 [packages]
 opencv-python = "*"
 mediapipe = "==0.10.21"
-pylint = "*"
 tomli = "*"
 typing-extensions = "*"
 
 [dev-packages]
+pylint = "*"
+black = "*"
 
 [requires]
 python_version = "3.12"
