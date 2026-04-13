@@ -24,6 +24,9 @@ MODEL_POINTS = np.array([
 
 
 def get_image_points(face, w, h):
+    """
+    Extract 2D facial landmark coordinates.
+    """
     return np.array([
         (int(face.landmark[i].x * w), int(face.landmark[i].y * h))
         for i in LANDMARKS
@@ -31,6 +34,9 @@ def get_image_points(face, w, h):
 
 
 def get_camera_matrix(w, h):
+    """
+    Construct a simple camera matrix.
+    """
     return np.array([
         [w, 0, w / 2],
         [0, w, h / 2],
@@ -38,6 +44,9 @@ def get_camera_matrix(w, h):
     ], dtype=np.float64)
 
 def estimate_pose(image_points, camera_matrix):
+    """
+    Estimate head pose.
+    """
     success, rvec, _ = cv2.solvePnP(
         MODEL_POINTS,
         image_points,
@@ -68,20 +77,26 @@ def estimate_pose(image_points, camera_matrix):
     return pitch, yaw, roll
 
 def compute_focus(pitch, yaw, roll):
+    """
+    Convert head pose angles into a normalized focus score.
+    """
     return 1.0 - min((pitch + yaw + roll) / 90.0, 1.0)
 
 
 def predict_focus(img):
     """
     This function uses MediaPipe FaceMesh to detect facial landmarks
-    and OpenCV's solvePnP method to estimate the 3D head pose, including pitch, yaw, and roll angles.
-    Based on the estimated head orientation, it computes a focus score between 0 and 1.
-    The more the face is oriented toward the camera, the higher the focus score; otherwise, the score decreases.
-    
+    and OpenCV's solvePnP method to estimate the 3D head pose, including
+    pitch, yaw, and roll angles.
+
+    Based on the estimated head orientation, it computes a focus score
+    between 0 and 1. The more the face is oriented toward the camera,
+    the higher the focus score; otherwise, the score decreases.
+
     Args:
         img (numpy.ndarray):
             Input image in OpenCV format (BGR color space).
-    
+
     Returns:
         float:
             A focus score ranging from 0.0 to 1.0:
