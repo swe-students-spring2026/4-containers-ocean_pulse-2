@@ -2,12 +2,10 @@ FROM python:3.13.12
 
 WORKDIR /app
 
-# COPY . . 
 ADD . /app
 
-RUN pip install flask
+RUN pip install flask pymongo
 
-EXPOSE 5001 
-#port 5000 not working on my computer
+EXPOSE 5000
 
 CMD ["python", "app.py"]

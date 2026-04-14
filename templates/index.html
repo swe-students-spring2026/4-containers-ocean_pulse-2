@@ -10,19 +10,20 @@
     <div id="data">
         <span>times attention lost:</span>
         <span class="important">{{attention_counter}}</span>
-        <!-- <span>average attention lapse:</span>
-        <span class="important">{{attention_avrg}}</span> -->
     </div>
     <div id="container">
         <video id="webcamVideo" autoplay playsinline></video>
         <div id="imagesSection">
             <h2>attention loss captured</h2>
             <div id="images">
-                {% for img in images %}
+                {% for record in records %}
+                {% if not record.focused %}
                 <div>
-                    <img src="/images/{{ img }}">
-                    <p>{{time_attn_lost}}</p>
+                    <img src="/images/{{ record._id }}">
+                    <p>{{ record.timestamp.strftime('%Y-%m-%d %H:%M:%S') if record.timestamp else 'N/A' }}</p>
+                    <p>confidence: {{ '%.1f' | format(record.confidence * 100) }}%</p>
                 </div>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>

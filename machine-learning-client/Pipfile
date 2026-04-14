@@ -8,6 +8,7 @@ opencv-python = "*"
 mediapipe = "==0.10.21"
 tomli = "*"
 typing-extensions = "*"
+pymongo = "*"
 
 [dev-packages]
 pylint = "*"
