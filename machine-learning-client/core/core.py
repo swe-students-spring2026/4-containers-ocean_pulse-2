@@ -12,10 +12,10 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "db-upload"))
 
-from loader import load_images
-from model import predict_focus
-from writer import write_json
-from upload import upload_results  # pylint: disable=import-error
+from loader import load_images  # pylint: disable=wrong-import-position
+from model import predict_focus  # pylint: disable=wrong-import-position
+from writer import write_json  # pylint: disable=wrong-import-position
+from upload import upload_results  # pylint: disable=wrong-import-position,import-error
 
 IMG_DIR = "/shared/img"
 OUT_FILE = "/app/output/result.json"

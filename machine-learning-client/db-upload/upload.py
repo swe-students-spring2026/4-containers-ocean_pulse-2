@@ -9,10 +9,8 @@ import os
 import base64
 from datetime import datetime, timezone
 
-import cv2
+import cv2  # pylint: disable=import-error
 from pymongo import MongoClient
-
-# pylint: disable=no-member
 
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://mongodb:27017")
 DB_NAME = os.environ.get("MONGO_DB", "ocean_pulse")

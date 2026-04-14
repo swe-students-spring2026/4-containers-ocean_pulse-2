@@ -1,3 +1,10 @@
+"""
+Ocean Pulse web application.
+
+Serves a dashboard showing attention-tracking results
+stored in MongoDB by the machine learning client.
+"""
+
 import os
 import base64
 from io import BytesIO
