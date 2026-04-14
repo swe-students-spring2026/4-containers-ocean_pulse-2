@@ -7,7 +7,5 @@ RUN pipenv install --deploy --system --clear
 RUN pip cache purge
 
 RUN apt-get update && apt-get install -y libgl1
-
-COPY . /app
-
-CMD ["python", "core/core.py"]
+RUN echo 'export PS1="\[\e[36m\]dev@\h\[\e[0m\]:\[\e[33m\]\w\[\e[0m\]\$ "' >> /etc/bash.bashrc
+RUN echo 'alias ll="ls -la"' >> /etc/bash.bashrc

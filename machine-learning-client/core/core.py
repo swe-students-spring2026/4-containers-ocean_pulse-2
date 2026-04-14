@@ -49,6 +49,8 @@ def main():
 
     write_json(OUT_FILE, results)
 
+    print("Uploading ... \n")
+
     if db_entries:
         upload_results(db_entries)
         print(f"[OK] uploaded {len(db_entries)} result(s) to MongoDB")
