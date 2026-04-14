@@ -12,7 +12,12 @@
         <span class="important">{{attention_counter}}</span>
     </div>
     <div id="container">
-        <video id="webcamVideo" autoplay playsinline></video>
+        <div>
+            <video id="webcamVideo" autoplay playsinline></video>
+
+            <canvas id="captureCanvas" hidden></canvas>
+        </div>
+        
         <div id="imagesSection">
             <h2>attention loss captured</h2>
             <div id="images">
@@ -35,6 +40,8 @@
         .then((stream) => {video.srcObject = stream;})
         .catch((error) => {console.error("could not access webcam!");});
     </script>
+
+    <script src="{{ url_for('static', filename='capture.js') }}"></script>
 
 </body>
 </html>
