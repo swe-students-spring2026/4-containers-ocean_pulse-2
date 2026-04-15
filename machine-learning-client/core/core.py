@@ -9,6 +9,8 @@ Main pipeline for processing images and predicting focus scores.
 
 import sys
 import os
+import time
+import shutil
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "db-upload"))
 
@@ -18,42 +20,59 @@ from writer import write_json  # pylint: disable=wrong-import-position
 from upload import upload_results  # pylint: disable=wrong-import-position,import-error
 
 IMG_DIR = "/shared/img"
-OUT_FILE = "/app/output/result.json"
+OUT_DIR = "/shared/output"
 
 
 def main():
     """
     Main function.
     """
-    images = load_images(IMG_DIR)
+    processed = set()
 
-    results = []
-    db_entries = []
+    clear_dir(IMG_DIR)
+    clear_dir(OUT_DIR)
 
-    for img_path, img in images:
-        score = predict_focus(img)
-        focused = score > 0.5
+    while True:
+        images = load_images(IMG_DIR)
 
-        results.append(
-            {"image": img_path, "focused": focused, "confidence": float(score)}
-        )
+        new_images = [(p, img) for p, img in images if p not in processed]
 
-        db_entries.append(
-            {
-                "image_name": img_path,
-                "image": img,
-                "focused": focused,
-                "confidence": float(score),
-            }
-        )
+        results = []
+        db_entries = []
 
-    write_json(OUT_FILE, results)
+        for img_path, img in new_images:
+            score = predict_focus(img)
+            focused = score > 0.5
 
-    if db_entries:
-        upload_results(db_entries)
-        print(f"[OK] uploaded {len(db_entries)} result(s) to MongoDB")
-    else:
-        print("[WARN] no images found to process")
+            processed.add(img_path)
+
+            results.append(
+                {"image": img_path, "focused": focused, "confidence": float(score)}
+            )
+
+            db_entries.append(
+                {
+                    "image_name": img_path,
+                    "image": img,
+                    "focused": focused,
+                    "confidence": float(score),
+                }
+            )
+
+        filename = f"result_{int(time.time())}.json"
+        write_json(OUT_DIR + "/" + filename, results)
+
+        time.sleep(2)
+
+
+def clear_dir(path):
+    for name in os.listdir(path):
+        file_path = os.path.join(path, name)
+
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.remove(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
 
 
 if __name__ == "__main__":
