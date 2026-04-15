@@ -147,3 +147,12 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# ignore images
+img/*.jpg
+img/*.jpeg
+img/*.png
+
+web-app/img/*.jpg
+web-app/img/*.jpeg
+web-app/img/*.png

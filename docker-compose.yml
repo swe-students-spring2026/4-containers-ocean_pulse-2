@@ -25,6 +25,8 @@ services:
     environment:
       - MONGO_URI=mongodb://mongodb:27017
       - MONGO_DB=ocean_pulse
+    volumes:
+      - ./img:/shared/img
 
 volumes:
   mongo-data:
