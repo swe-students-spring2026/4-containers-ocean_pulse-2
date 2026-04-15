@@ -17,9 +17,6 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb://mongodb:27017")
-
-
-
 DB_NAME = os.environ.get("MONGO_DB", "ocean_pulse")
 
 mongo_client = MongoClient(MONGO_URI)
@@ -53,9 +50,6 @@ def home():
         attention_counter=attention_counter,
         records=records,
     )
-    
-    
-
 
 @app.route("/images/<record_id>")
 def get_image(record_id):
@@ -82,7 +76,7 @@ def upload_image():
 
     if not data or "image" not in data:
         return jsonify({"error": "No image received"}),400
-    
+
     image_data = data["image"]
 
     try:
@@ -101,9 +95,8 @@ def upload_image():
             "message": "Image saved successfully",
             "filename": filename
         })
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-exception-caught
         return jsonify({"error": str(e)}), 500
-    
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
