@@ -1,8 +1,16 @@
 """Tests for the Flask web application."""
 
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 from unittest.mock import MagicMock
 
-import app as app_module
+
+APP_PATH = Path(__file__).resolve().parents[1] / "app.py"
+APP_SPEC = spec_from_file_location("web_app_module", APP_PATH)
+app_module = module_from_spec(APP_SPEC)
+assert APP_SPEC is not None
+assert APP_SPEC.loader is not None
+APP_SPEC.loader.exec_module(app_module)
 
 
 def test_app_exists():
