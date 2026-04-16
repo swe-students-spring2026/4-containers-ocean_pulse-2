@@ -21,6 +21,7 @@ MONGO_URI = os.environ.get("MONGO_URI", "mongodb://mongodb:27017")
 DB_NAME = os.environ.get("MONGO_DB", "ocean_pulse")
 
 mongo_client = MongoClient(MONGO_URI)
+session_active = False
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -74,6 +75,11 @@ def get_image(record_id):
 @app.route("/upload-image", methods=["POST"])
 def upload_image():
     """Receive one captured browser image and save it to the shared image folder"""
+    global session_active
+
+    if not session_active:
+        return jsonify({"message": "session inactive, ignored"}), 200
+
     data = request.get_json(silent=True)
 
     if not data or "image" not in data:
@@ -98,12 +104,56 @@ def upload_image():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/start-session", methods=["POST"])
+def start_session():
+    global session_active
+    session_active = True
+    return jsonify({"status": "started"})
+
+
+@app.route("/api/end-session", methods=["POST"])
+def end_session():
+    global session_active
+    session_active = False
+    return jsonify({"status": "stopped"})
+
+
+@app.route("/api/reset-session", methods=["POST"])
+def reset_session():
+    collection = get_collection()
+    collection.delete_many({})
+
+    try:
+        if os.path.exists(SHARED_IMGS):
+            for filename in os.listdir(SHARED_IMGS):
+                file_path = os.path.join(SHARED_IMGS, filename)
+
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+
+    except Exception as e:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"DB cleared but image cleanup failed: {str(e)}",
+                }
+            ),
+            500,
+        )
+
+    return jsonify({"status": "ok", "message": "database cleared"})
+
+
 @app.route("/api/status")
 def status():
     collection = get_collection()
     records = list(collection.find().sort("timestamp", -1))
 
-    attention_counter = sum(1 for r in records if not r.get("focused"))
+    total_count = len(records)
+    unfocused_records = [r for r in records if not r.get("focused")]
+
+    attention_counter = len(unfocused_records)
 
     def format_ts(ts):
         if ts:
@@ -116,6 +166,7 @@ def status():
     return jsonify(
         {
             "attention_counter": attention_counter,
+            "total_count": total_count,
             "records": [
                 {
                     "_id": str(r["_id"]),
@@ -123,8 +174,7 @@ def status():
                     "confidence": r.get("confidence", 0),
                     "timestamp": format_ts(r.get("timestamp")),
                 }
-                for r in records
-                if not r.get("focused")
+                for r in unfocused_records
             ],
         }
     )

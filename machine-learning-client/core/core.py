@@ -4,7 +4,6 @@ Main pipeline for processing images and predicting focus scores.
 - Loads images from a shared directory (/shared/img)
 - Runs an AI model on each image
 - Stores results (including images) to MongoDB
-- Also writes a local JSON backup to /app/output
 """
 
 import sys
@@ -16,11 +15,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "db-upload"))
 
 from loader import load_images  # pylint: disable=wrong-import-position
 from model import predict_focus  # pylint: disable=wrong-import-position
-from writer import write_json  # pylint: disable=wrong-import-position
 from upload import upload_results  # pylint: disable=wrong-import-position,import-error
 
 IMG_DIR = "/shared/img"
-OUT_DIR = "/shared/output"
 
 
 def main():
@@ -30,7 +27,6 @@ def main():
     processed = set()
 
     clear_dir(IMG_DIR)
-    clear_dir(OUT_DIR)
 
     while True:
         images = load_images(IMG_DIR)
@@ -59,12 +55,18 @@ def main():
                 }
             )
 
+            try:
+                file_path = os.path.join(IMG_DIR, img_path)
+
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print(f"[CLEAN] deleted {img_path}")
+
+            except (FileNotFoundError, PermissionError, OSError) as e:
+                print(f"[WARN] failed to delete {img_path}: {e}")
+
         if db_entries:
-            filename = f"result_{int(time.time())}.json"
-            write_json(OUT_DIR + "/" + filename, results)
-
             print("Uploading ... \n")
-
             upload_results(db_entries)
             print(f"[OK] uploaded {len(db_entries)} result(s) to MongoDB")
         else:

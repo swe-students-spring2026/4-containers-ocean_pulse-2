@@ -7,32 +7,59 @@
 </head>
 
 <body>
-    <h1>ocean_pulse's attention tracker</h1>
+    <h1>ATTENTION TRACKER</h1>
 
-    <div id="data">
-        <span>times attention lost:</span>
-        <span class="important" id="counter">0</span>
-    </div>
+    <img src="{{ url_for('static', filename='assets/WatchingYou.png') }}" id="leftImg" class="side-img">
+    <img src="{{ url_for('static', filename='assets/WatchingYou.png') }}" id="rightImg" class="side-img">
 
     <div id="container">
+        <div class = "info-box" id="focusRate">
+            FOCUS RATE：0%
+        </div>
         <div>
-            <button id="toggleCamera">Start Camera</button>
             <video id="webcamVideo" autoplay playsinline></video>
+
+            <div class="btn-row">
+                <button id="startBtn" class="btn">START SESSION</button>
+                <button id="endBtn" class="btn">END SESSION</button>
+            </div>
+
             <canvas id="captureCanvas" hidden></canvas>
         </div>
 
-        <div id="imagesSection">
-            <h2>attention loss captured</h2>
-            <div id="images"></div>
+        <button id="openGalleryBtn" class="btn wide-btn">
+            View Moments of Distraction (<span id="counter">0</span>)
+        </button>
+
+        <div id="drawer" class="drawer">
+            <div id="images" class="images-grid"></div>
         </div>
+
+        <div id="drawerOverlay" class="overlay"></div>
     </div>
 
+    <div id="lightbox" class="lightbox">
+        <img id="lightboxImg" />
+    </div>
+
+    <script src="{{ url_for('static', filename='capture.js') }}"></script>
+
     <script>
+        const leftImg = document.getElementById("leftImg");
+        const rightImg = document.getElementById("rightImg");
+
         const video = document.getElementById("webcamVideo");
-        const button = document.getElementById("toggleCamera");
+        const startBtn = document.getElementById("startBtn");
+        const endBtn = document.getElementById("endBtn");
+        const openBtn = document.getElementById("openGalleryBtn");
+
+        const drawer = document.getElementById("drawer");
+        const overlay = document.getElementById("drawerOverlay");
+
+        const lightbox = document.getElementById("lightbox");
+        const lightboxImg = document.getElementById("lightboxImg");
 
         let stream = null;
-        let cameraOn = false;
 
         async function startCamera() {
             try {
@@ -42,11 +69,8 @@
                 });
 
                 video.srcObject = stream;
-                cameraOn = true;
-                button.textContent = "Stop Camera";
-
             } catch (err) {
-                console.error("Could not access webcam:", err);
+                console.error("Camera error:", err);
                 alert("Camera access denied or not available.");
             }
         }
@@ -55,23 +79,79 @@
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
-
             video.srcObject = null;
             stream = null;
-            cameraOn = false;
-            button.textContent = "Start Camera";
         }
 
-        button.addEventListener("click", () => {
-            cameraOn ? stopCamera() : startCamera();
+        startBtn.addEventListener("click", async () => {
+            try {
+                await fetch("/api/start-session", { method: "POST" });
+
+                startBtn.disabled = true;
+                endBtn.disabled = false;
+
+                document.body.classList.add("session-on");
+                showSides();
+
+                console.log("Session started");
+            } catch (err) {
+                console.error(err);
+            }
         });
 
-        window.addEventListener("beforeunload", stopCamera);
-    </script>
+        endBtn.addEventListener("click", async () => {
+            try {
+                await fetch("/api/end-session", { method: "POST" });
+                await fetch("/api/reset-session", { method: "POST" });
 
-    <script src="{{ url_for('static', filename='capture.js') }}"></script>
+                startBtn.disabled = false;
+                endBtn.disabled = true;
+                updateImages();
+                
+                document.body.classList.remove("session-on");
+                hideSides();
 
-    <script>
+                console.log("Session stopped & cleared");
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        function openDrawer() {
+            drawer.classList.add("open");
+            overlay.classList.add("show");
+        }
+
+        function closeDrawer() {
+            drawer.classList.remove("open");
+            overlay.classList.remove("show");
+        }
+
+        function showSides() {
+            leftImg.classList.add("show");
+            rightImg.classList.add("show");
+        }
+
+        function hideSides() {
+            leftImg.classList.remove("show");
+            rightImg.classList.remove("show");
+        }
+
+        openBtn.addEventListener("click", openDrawer);
+        overlay.addEventListener("click", closeDrawer);
+
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.classList.add("show");
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove("show");
+            lightboxImg.src = "";
+        }
+
+        lightbox.addEventListener("click", closeLightbox);
+
         async function updateImages() {
             try {
                 const res = await fetch("/api/status");
@@ -80,23 +160,48 @@
                 document.getElementById("counter").textContent =
                     data.attention_counter ?? 0;
 
+                const total = data.total_count ?? 0;
+                const unfocused = data.attention_counter ?? 0;
+
+                let focusRate = 0;
+                if (total > 0) {
+                    focusRate = (1 - unfocused / total) * 100;
+                }
+
+                const focusEl = document.getElementById("focusRate");
+                if (focusEl) {
+                    focusEl.textContent = `FOCUS RATE：${focusRate.toFixed(1)}%`;
+                }
+
                 const container = document.getElementById("images");
 
                 container.innerHTML = data.records.map(r => `
                     <div>
-                        <img src="/images/${r._id}">
+                        <img 
+                            src="/images/${r._id}" 
+                            class="gallery-img"
+                            onclick="openLightbox('/images/${r._id}')"
+                        />
                         <p>${r.timestamp || 'N/A'}</p>
                     </div>
                 `).join("");
 
             } catch (err) {
-                console.error("update failed:", err);
+                console.error("Update failed:", err);
             }
         }
 
-        updateImages();
-        setInterval(updateImages, 2000);
-    </script>
+        window.addEventListener("DOMContentLoaded", () => {
+            startCamera();
 
+            startBtn.disabled = false;
+            endBtn.disabled = true;
+
+            updateImages();
+            setInterval(updateImages, 2000);
+        });
+
+        window.addEventListener("beforeunload", stopCamera);
+    </script>
 </body>
 </html>
