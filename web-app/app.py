@@ -9,6 +9,7 @@ import os
 import base64
 from io import BytesIO
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from flask import Flask, render_template, send_file, request, jsonify
 from pymongo import MongoClient
@@ -96,6 +97,31 @@ def upload_image():
     except Exception as e:  # pylint: disable=broad-exception-caught
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/status")
+def status():
+    collection = get_collection()
+    records = list(collection.find().sort("timestamp", -1))
+
+    attention_counter = sum(1 for r in records if not r.get("focused"))
+
+    def format_ts(ts):
+        if ts:
+            ts = ts.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York"))
+            return ts.strftime("%Y-%m-%d %H:%M:%S")
+        return "N/A"
+
+    return jsonify({
+        "attention_counter": attention_counter,
+        "records": [
+            {
+                "_id": str(r["_id"]),
+                "focused": r.get("focused", False),
+                "confidence": r.get("confidence", 0),
+                "timestamp": format_ts(r.get("timestamp"))
+            }
+            for r in records if not r.get("focused")
+        ]
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
