@@ -97,6 +97,7 @@ def upload_image():
     except Exception as e:  # pylint: disable=broad-exception-caught
         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/api/status")
 def status():
     collection = get_collection()
@@ -106,22 +107,28 @@ def status():
 
     def format_ts(ts):
         if ts:
-            ts = ts.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York"))
+            ts = ts.replace(tzinfo=ZoneInfo("UTC")).astimezone(
+                ZoneInfo("America/New_York")
+            )
             return ts.strftime("%Y-%m-%d %H:%M:%S")
         return "N/A"
 
-    return jsonify({
-        "attention_counter": attention_counter,
-        "records": [
-            {
-                "_id": str(r["_id"]),
-                "focused": r.get("focused", False),
-                "confidence": r.get("confidence", 0),
-                "timestamp": format_ts(r.get("timestamp"))
-            }
-            for r in records if not r.get("focused")
-        ]
-    })
+    return jsonify(
+        {
+            "attention_counter": attention_counter,
+            "records": [
+                {
+                    "_id": str(r["_id"]),
+                    "focused": r.get("focused", False),
+                    "confidence": r.get("confidence", 0),
+                    "timestamp": format_ts(r.get("timestamp")),
+                }
+                for r in records
+                if not r.get("focused")
+            ],
+        }
+    )
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
