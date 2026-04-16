@@ -59,6 +59,16 @@ def main():
                 }
             )
 
+            try:
+                file_path = os.path.join(IMG_DIR, img_path)
+
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print(f"[CLEAN] deleted {img_path}")
+
+            except Exception as e:
+                print(f"[WARN] failed to delete {img_path}: {e}")
+
         if db_entries:
             filename = f"result_{int(time.time())}.json"
             write_json(OUT_DIR + "/" + filename, results)
