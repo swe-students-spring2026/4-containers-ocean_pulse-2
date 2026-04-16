@@ -53,6 +53,7 @@ def home():
         records=records,
     )
 
+
 @app.route("/images/<record_id>")
 def get_image(record_id):
     """Serve an image stored in MongoDB by its document _id."""
@@ -78,7 +79,7 @@ def upload_image():
 
     if not session_active:
         return jsonify({"message": "session inactive, ignored"}), 200
-    
+
     data = request.get_json(silent=True)
 
     if not data or "image" not in data:
@@ -102,6 +103,7 @@ def upload_image():
     except Exception as e:  # pylint: disable=broad-exception-caught
         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/api/start-session", methods=["POST"])
 def start_session():
     global session_active
@@ -114,6 +116,7 @@ def end_session():
     global session_active
     session_active = False
     return jsonify({"status": "stopped"})
+
 
 @app.route("/api/reset-session", methods=["POST"])
 def reset_session():
@@ -129,12 +132,18 @@ def reset_session():
                     os.remove(file_path)
 
     except Exception as e:
-        return jsonify({
-            "status": "error",
-            "message": f"DB cleared but image cleanup failed: {str(e)}"
-        }), 500
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": f"DB cleared but image cleanup failed: {str(e)}",
+                }
+            ),
+            500,
+        )
 
     return jsonify({"status": "ok", "message": "database cleared"})
+
 
 @app.route("/api/status")
 def status():

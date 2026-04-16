@@ -20,6 +20,7 @@ from upload import upload_results  # pylint: disable=wrong-import-position,impor
 
 IMG_DIR = "/shared/img"
 
+
 def main():
     """
     Main function.
