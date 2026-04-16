@@ -74,6 +74,7 @@ def main():
 
 
 def clear_dir(path):
+    """Simple function that clears up a given directory."""
     for name in os.listdir(path):
         file_path = os.path.join(path, name)
 
