@@ -15,6 +15,7 @@ services:
       - MONGO_DB=ocean_pulse
     volumes:
       - ./img:/shared/img
+      - ./machine-learning-client/output:/shared/output
 
   web-app:
     build: ./web-app
