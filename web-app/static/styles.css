@@ -2,8 +2,8 @@
     --bg: rgb(248, 245, 236);
     --text: rgb(53, 61, 82);
     --h1-bg: rgb(92, 93, 90);
-    --h1-text: rgb(230, 250, 252);
-    --border: rgb(53, 61, 82);
+    --h1-text: rgb(252, 250, 230);
+    --border: rgb(47, 41, 33);
     --btn-bg: rgb(195, 185, 155);
     --btn-hover: rgb(178, 170, 146);
 }
@@ -109,6 +109,19 @@ video {
 .wide-btn {
     width: 640px;
     margin-top: -10px;
+}
+
+.info-box {
+    width: 600px;
+    padding: 15px;
+    border: 3px solid var(--border);
+    border-radius: 12px;
+    background: var(--btn-bg);
+    color: var(--text);
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-align: center;
 }
 
 .overlay {

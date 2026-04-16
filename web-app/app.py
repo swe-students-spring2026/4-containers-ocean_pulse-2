@@ -141,7 +141,10 @@ def status():
     collection = get_collection()
     records = list(collection.find().sort("timestamp", -1))
 
-    attention_counter = sum(1 for r in records if not r.get("focused"))
+    total_count = len(records)
+    unfocused_records = [r for r in records if not r.get("focused")]
+
+    attention_counter = len(unfocused_records)
 
     def format_ts(ts):
         if ts:
@@ -154,6 +157,7 @@ def status():
     return jsonify(
         {
             "attention_counter": attention_counter,
+            "total_count": total_count,
             "records": [
                 {
                     "_id": str(r["_id"]),
@@ -161,8 +165,7 @@ def status():
                     "confidence": r.get("confidence", 0),
                     "timestamp": format_ts(r.get("timestamp")),
                 }
-                for r in records
-                if not r.get("focused")
+                for r in unfocused_records
             ],
         }
     )

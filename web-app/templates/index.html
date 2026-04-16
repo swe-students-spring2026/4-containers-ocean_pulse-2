@@ -13,6 +13,9 @@
     <img src="{{ url_for('static', filename='assets/WatchingYou.png') }}" id="rightImg" class="side-img">
 
     <div id="container">
+        <div class = "info-box" id="focusRate">
+            FOCUS RATE：0%
+        </div>
         <div>
             <video id="webcamVideo" autoplay playsinline></video>
 
@@ -156,6 +159,19 @@
 
                 document.getElementById("counter").textContent =
                     data.attention_counter ?? 0;
+
+                const total = data.total_count ?? 0;
+                const unfocused = data.attention_counter ?? 0;
+
+                let focusRate = 0;
+                if (total > 0) {
+                    focusRate = (1 - unfocused / total) * 100;
+                }
+
+                const focusEl = document.getElementById("focusRate");
+                if (focusEl) {
+                    focusEl.textContent = `FOCUS RATE：${focusRate.toFixed(1)}%`;
+                }
 
                 const container = document.getElementById("images");
 
