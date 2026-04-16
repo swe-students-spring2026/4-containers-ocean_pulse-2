@@ -70,7 +70,7 @@ def main():
         else:
             print("[WARN] no images found to process")
 
-        time.sleep(2)
+        time.sleep(10)
 
 
 def clear_dir(path):
