@@ -1,6 +1,5 @@
-![ML Client](https://github.com/swe-students-spring2026/4-containers-ocean_pulse-2/actions/workflows/ml-client.yml/badge.svg)
-![Web App](https://github.com/swe-students-spring2026/4-containers-ocean_pulse-2/actions/workflows/web-app.yml/badge.svg)
 ![Lint](https://github.com/swe-students-spring2026/4-containers-ocean_pulse-2/actions/workflows/lint.yml/badge.svg)
+![Event Logger](https://github.com/swe-students-spring2026/4-containers-ocean_pulse-2/actions/workflows/event-logger.yml/badge.svg)
 
 # Ocean Pulse — Study Focus Tracker
 
@@ -92,6 +91,5 @@ MONGO_DB=ocean_pulse
 
 GitHub Actions workflows run automatically on every push and pull request:
 
-- **Lint** (`lint.yml`) — runs `pylint` and `black --check` on both subsystems
-- **Web App** (`web-app.yml`) — installs dependencies, runs `pytest` with coverage for the web app
-- **ML Client** (`ml-client.yml`) — installs dependencies, runs `pytest` with coverage for the ML client
+- **Lint** (`lint.yml`) — runs `pylint` and `black --check` on both subsystems (web-app and machine-learning-client)
+- **Event Logger** (`event-logger.yml`) — logs GitHub events for course tracking
