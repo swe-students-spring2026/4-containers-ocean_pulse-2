@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "db-upload"))
 
 from loader import load_images  # pylint: disable=wrong-import-position
 from model import predict_focus  # pylint: disable=wrong-import-position
-from writer import write_json  # pylint: disable=wrong-import-position
 from upload import upload_results  # pylint: disable=wrong-import-position,import-error
 
 IMG_DIR = "/shared/img"
@@ -63,7 +62,7 @@ def main():
                     os.remove(file_path)
                     print(f"[CLEAN] deleted {img_path}")
 
-            except Exception as e:
+            except (FileNotFoundError, PermissionError, OSError) as e:
                 print(f"[WARN] failed to delete {img_path}: {e}")
 
         if db_entries:
