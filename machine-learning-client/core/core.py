@@ -59,8 +59,16 @@ def main():
                 }
             )
 
-        filename = f"result_{int(time.time())}.json"
-        write_json(OUT_DIR + "/" + filename, results)
+        if db_entries:
+            filename = f"result_{int(time.time())}.json"
+            write_json(OUT_DIR + "/" + filename, results)
+
+            print("Uploading ... \n")
+
+            upload_results(db_entries)
+            print(f"[OK] uploaded {len(db_entries)} result(s) to MongoDB")
+        else:
+            print("[WARN] no images found to process")
 
         time.sleep(2)
 
