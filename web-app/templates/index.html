@@ -87,6 +87,7 @@
                 startBtn.disabled = true;
                 endBtn.disabled = false;
 
+                document.body.classList.add("session-on");
                 showSides();
 
                 console.log("Session started");
@@ -103,7 +104,8 @@
                 startBtn.disabled = false;
                 endBtn.disabled = true;
                 updateImages();
-
+                
+                document.body.classList.remove("session-on");
                 hideSides();
 
                 console.log("Session stopped & cleared");

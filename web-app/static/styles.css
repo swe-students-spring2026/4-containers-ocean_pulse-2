@@ -1,8 +1,29 @@
+:root {
+    --bg: rgb(248, 245, 236);
+    --text: rgb(53, 61, 82);
+    --h1-bg: rgb(92, 93, 90);
+    --h1-text: rgb(230, 250, 252);
+    --border: rgb(53, 61, 82);
+    --btn-bg: rgb(195, 185, 155);
+    --btn-hover: rgb(178, 170, 146);
+}
+
+body.session-on {
+    --bg: rgb(18, 22, 30);
+    --text: rgb(235, 245, 255);
+    --h1-bg: rgb(255, 80, 120);
+    --h1-text: white;
+    --border: rgb(255, 80, 120);
+    --btn-bg: rgb(35, 40, 55);
+    --btn-hover: rgb(55, 65, 85);
+}
+
 body {
     margin: 20px;
     font-family: system-ui;
-    background: rgb(230, 250, 252);
-    color: rgb(53, 61, 82);
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.6s ease, color 0.6s ease;
 }
 
 h1 {
@@ -10,19 +31,22 @@ h1 {
     padding: 30px;
     border-radius: 12px;
     font-size: 60px;
-    background: rgb(53, 61, 82);
-    color: rgb(230, 250, 252);
+    background: var(--h1-bg);
+    color: var(--h1-text);
     text-align: center;
+    border: 3px solid var(--border);
+    transition: all 0.6s ease;
 }
 
 video {
     width: 640px;
     height: 480px;
     margin-top: 20px;
-    border: 3px solid rgb(53, 61, 82);
+    border: 3px solid var(--border);
     border-radius: 12px;
     display: block;
     margin: 20px auto 0;
+    transition: border 0.6s ease;
 }
 
 #container {
@@ -52,27 +76,21 @@ video {
 .btn {
     flex: 1;
     padding: 15px;
-
     margin-top: 10px;
-
-    border: 3px solid rgb(53, 61, 82);
+    border: 3px solid var(--border);
     border-radius: 12px;
-
-    background: rgb(252, 232, 237);
-    color: rgb(53, 61, 82);
-
+    background: var(--btn-bg);
+    color: var(--text);
     font-size: 16px;
     font-weight: bold;
     letter-spacing: 1px;
-
     cursor: pointer;
-    transition: all 0.2s ease;
-
+    transition: all 0.3s ease;
     text-align: center;
 }
 
 .btn:hover {
-    background: rgb(255, 210, 220);
+    background: var(--btn-hover);
     transform: translateY(-2px);
 }
 
@@ -83,9 +101,9 @@ video {
 .btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
-    background: rgb(240, 240, 240);
-    color: rgb(120, 120, 120);
-    border-color: rgb(200, 200, 200);
+    background: rgb(90, 90, 90);
+    color: rgb(180, 180, 180);
+    border-color: rgb(120, 120, 120);
 }
 
 .wide-btn {
@@ -97,7 +115,7 @@ video {
     position: fixed;
     inset: 0;
     top: -20px;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 100;
     display: none;
 }
@@ -143,7 +161,7 @@ video {
 .lightbox {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0, 0, 0, 0.85);
     display: none;
     align-items: center;
     justify-content: center;
@@ -158,7 +176,7 @@ video {
     max-width: 90%;
     max-height: 90%;
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 #leftImg {
